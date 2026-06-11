@@ -62,6 +62,14 @@
   .nav-social .ig { background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
   .nav-social .wa { background: var(--green-wa); }
   .nav-social svg { width: 18px; height: 18px; fill: white; }
+  .nav-worker-btn {
+    padding: .45rem 1rem; border-radius: 50px;
+    background: transparent; border: 1.5px solid var(--foam);
+    color: var(--muted); font-family: 'DM Sans', sans-serif;
+    font-size: .78rem; font-weight: 500; cursor: pointer;
+    transition: all .2s; display: flex; align-items: center; gap: .4rem;
+  }
+  .nav-worker-btn:hover { border-color: var(--caramel); color: var(--caramel); }
 
   /* ─── HERO ─── */
   .hero {
@@ -387,6 +395,7 @@
     <li><a href="#nosotros">Nosotros</a></li>
     <li><a href="#social">Contacto</a></li>
   </ul>
+  <button class="nav-worker-btn" onclick="openLoginModal()" id="navWorkerBtn">🔐 Acceso personal</button>
   <div class="nav-social">
     <a class="ig" href="https://www.instagram.com/tu_cafeteria" target="_blank" aria-label="Instagram">
       <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
@@ -616,6 +625,258 @@
   <p>© 2025 Café Ritual · Lima, Perú · <a href="https://wa.me/51999999999">+51 999 999 999</a></p>
 </footer>
 
+<!-- ═══ MODAL LOGIN ═══ -->
+<div class="modal-overlay" id="loginModal" style="align-items:center;">
+  <div class="modal" style="border-radius:20px;max-width:420px;padding:2.5rem;">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--caramel);margin-bottom:.3rem;">Zona de personal</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.6rem;">Iniciar sesión</h2>
+      </div>
+      <button class="modal-close" onclick="closeLoginModal()">✕</button>
+    </div>
+    <div id="loginError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:.75rem 1rem;font-size:.83rem;color:#b91c1c;margin-bottom:1rem;"></div>
+    <div class="order-form" style="gap:.9rem;">
+      <div class="form-row">
+        <label>Usuario</label>
+        <input type="text" id="loginUser" placeholder="tu.nombre" autocomplete="username">
+      </div>
+      <div class="form-row">
+        <label>Contraseña</label>
+        <div style="position:relative;">
+          <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" style="width:100%;padding-right:2.5rem;">
+          <button onclick="togglePass()" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:.85rem;">👁</button>
+        </div>
+      </div>
+      <button class="btn-primary" style="width:100%;padding:1rem;" onclick="doLogin()">Entrar</button>
+    </div>
+    <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:1.25rem;">Solo para personal autorizado de Café Ritual</p>
+  </div>
+</div>
+
+<!-- ═══ PANEL ADMIN ═══ -->
+<div id="adminPanel" style="display:none;position:fixed;inset:0;z-index:500;background:var(--cream);overflow-y:auto;">
+  <style>
+    /* ── Admin styles ── */
+    .adm-nav {
+      background:var(--espresso);color:var(--cream);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:1rem 2rem;position:sticky;top:0;z-index:10;
+    }
+    .adm-nav-left { display:flex;align-items:center;gap:1rem; }
+    .adm-nav-logo { font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--latte); }
+    .adm-role-badge {
+      font-size:.7rem;padding:.2rem .65rem;border-radius:50px;
+      letter-spacing:.08em;text-transform:uppercase;font-weight:600;
+    }
+    .role-admin { background:var(--caramel);color:white; }
+    .role-worker { background:rgba(255,255,255,.15);color:rgba(255,255,255,.8); }
+    .adm-tabs {
+      display:flex;gap:.35rem;background:rgba(255,255,255,.07);
+      padding:.4rem;border-radius:12px;
+    }
+    .adm-tab {
+      padding:.45rem 1rem;border-radius:8px;border:none;
+      background:transparent;color:rgba(255,255,255,.55);
+      font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;
+    }
+    .adm-tab.active { background:var(--caramel);color:white; }
+    .adm-tab:hover:not(.active) { color:white; }
+    .adm-body { max-width:1000px;margin:0 auto;padding:2rem; }
+    .adm-section { display:none; }
+    .adm-section.active { display:block; }
+    .adm-card {
+      background:white;border-radius:16px;padding:1.5rem;
+      box-shadow:0 2px 12px rgba(28,16,8,.07);margin-bottom:1.25rem;
+    }
+    .adm-card-title {
+      font-family:'Playfair Display',serif;font-size:1.1rem;
+      margin-bottom:1rem;color:var(--espresso);display:flex;
+      align-items:center;gap:.5rem;
+    }
+    /* stat cards */
+    .stat-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem; }
+    .stat-card {
+      background:white;border-radius:14px;padding:1.25rem;
+      box-shadow:0 2px 10px rgba(28,16,8,.06);text-align:center;
+    }
+    .stat-num { font-family:'Playfair Display',serif;font-size:2rem;color:var(--caramel);font-weight:700; }
+    .stat-label { font-size:.75rem;color:var(--muted);margin-top:.2rem; }
+    /* workers table */
+    .workers-table { width:100%;border-collapse:collapse; }
+    .workers-table th {
+      text-align:left;font-size:.75rem;text-transform:uppercase;
+      letter-spacing:.1em;color:var(--muted);padding:.6rem .75rem;
+      border-bottom:2px solid var(--foam);
+    }
+    .workers-table td {
+      padding:.85rem .75rem;border-bottom:1px solid var(--foam);
+      font-size:.88rem;vertical-align:middle;
+    }
+    .workers-table tr:last-child td { border-bottom:none; }
+    .workers-table tr:hover td { background:var(--foam); }
+    .status-badge {
+      display:inline-flex;align-items:center;gap:.3rem;
+      font-size:.72rem;padding:.25rem .65rem;border-radius:50px;
+      font-weight:600;letter-spacing:.05em;
+    }
+    .status-active { background:#dcfce7;color:#166534; }
+    .status-blocked { background:#fee2e2;color:#991b1b; }
+    .action-btn {
+      padding:.4rem .9rem;border-radius:8px;border:none;
+      font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;
+      cursor:pointer;transition:all .2s;
+    }
+    .btn-block { background:#fee2e2;color:#991b1b; }
+    .btn-block:hover { background:#fca5a5; }
+    .btn-unblock { background:#dcfce7;color:#166534; }
+    .btn-unblock:hover { background:#86efac; }
+    .btn-delete { background:var(--foam);color:var(--muted); }
+    .btn-delete:hover { background:#fecaca;color:#991b1b; }
+    /* add worker form */
+    .add-worker-form {
+      display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.75rem;align-items:end;
+    }
+    @media(max-width:600px) { .add-worker-form { grid-template-columns:1fr; } }
+    /* activity log */
+    .log-item {
+      display:flex;gap:.75rem;padding:.7rem 0;
+      border-bottom:1px solid var(--foam);font-size:.83rem;
+    }
+    .log-item:last-child { border-bottom:none; }
+    .log-time { color:var(--muted);font-size:.75rem;white-space:nowrap;padding-top:.1rem; }
+    .log-dot {
+      width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:.35rem;
+    }
+    .log-login { background:#86efac; }
+    .log-block { background:#fca5a5; }
+    .log-add { background:#93c5fd; }
+    .log-logout { background:#d1d5db; }
+    /* my profile */
+    .profile-avatar {
+      width:72px;height:72px;border-radius:50%;
+      background:linear-gradient(135deg,var(--caramel),var(--espresso));
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.8rem;color:white;flex-shrink:0;
+    }
+    .worker-tab-hidden { display:none; }
+    .logout-btn {
+      padding:.45rem 1rem;border-radius:50px;
+      background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+      color:rgba(255,255,255,.8);font-family:'DM Sans',sans-serif;
+      font-size:.8rem;cursor:pointer;transition:all .2s;
+    }
+    .logout-btn:hover { background:rgba(255,255,255,.2); }
+  </style>
+
+  <!-- Admin Nav -->
+  <div class="adm-nav">
+    <div class="adm-nav-left">
+      <span class="adm-nav-logo">☕ Panel Café Ritual</span>
+      <span class="adm-role-badge" id="admRoleBadge"></span>
+    </div>
+    <div class="adm-tabs" id="admTabs">
+      <button class="adm-tab active" onclick="admTab('dashboard',this)">📊 Resumen</button>
+      <button class="adm-tab worker-tab-hidden" id="tabTrabajadores" onclick="admTab('trabajadores',this)">👥 Trabajadores</button>
+      <button class="adm-tab worker-tab-hidden" id="tabActividad" onclick="admTab('actividad',this)">📋 Actividad</button>
+      <button class="adm-tab" onclick="admTab('miperfil',this)">👤 Mi perfil</button>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Cerrar sesión</button>
+  </div>
+
+  <div class="adm-body">
+
+    <!-- DASHBOARD -->
+    <div class="adm-section active" id="sec-dashboard">
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--caramel);">Panel de control</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;margin-top:.25rem;" id="welcomeMsg"></h2>
+      </div>
+      <div class="stat-grid" id="statGrid"></div>
+      <div class="adm-card">
+        <div class="adm-card-title">⏱ Actividad reciente</div>
+        <div id="dashLog"></div>
+      </div>
+    </div>
+
+    <!-- TRABAJADORES (solo admin) -->
+    <div class="adm-section" id="sec-trabajadores">
+      <div class="adm-card">
+        <div class="adm-card-title">➕ Agregar trabajador</div>
+        <div class="add-worker-form">
+          <div class="form-row">
+            <label>Nombre completo</label>
+            <input type="text" id="newName" placeholder="Ej: Ana García">
+          </div>
+          <div class="form-row">
+            <label>Usuario</label>
+            <input type="text" id="newUser" placeholder="ana.garcia">
+          </div>
+          <div class="form-row">
+            <label>Contraseña</label>
+            <input type="password" id="newPass" placeholder="mínimo 6 caracteres">
+          </div>
+          <button class="btn-primary" style="height:44px;white-space:nowrap;" onclick="addWorker()">Agregar</button>
+        </div>
+      </div>
+      <div class="adm-card">
+        <div class="adm-card-title">👥 Equipo actual</div>
+        <div style="overflow-x:auto;">
+          <table class="workers-table" id="workersTable">
+            <thead>
+              <tr>
+                <th>Trabajador</th>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Último acceso</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="workersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVIDAD -->
+    <div class="adm-section" id="sec-actividad">
+      <div class="adm-card">
+        <div class="adm-card-title">📋 Registro de actividad</div>
+        <div id="fullLog"></div>
+      </div>
+    </div>
+
+    <!-- MI PERFIL -->
+    <div class="adm-section" id="sec-miperfil">
+      <div class="adm-card">
+        <div style="display:flex;gap:1.25rem;align-items:flex-start;flex-wrap:wrap;">
+          <div class="profile-avatar" id="profileAvatar"></div>
+          <div>
+            <div style="font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--caramel);margin-bottom:.3rem;">Tu perfil</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.5rem;" id="profileName"></div>
+            <div style="color:var(--muted);font-size:.85rem;margin-top:.25rem;" id="profileUser"></div>
+          </div>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--foam);margin:1.5rem 0;">
+        <div class="adm-card-title">Cambiar contraseña</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;max-width:480px;">
+          <div class="form-row">
+            <label>Nueva contraseña</label>
+            <input type="password" id="newPassSelf" placeholder="mínimo 6 caracteres">
+          </div>
+          <div class="form-row">
+            <label>Confirmar</label>
+            <input type="password" id="confirmPassSelf" placeholder="repite la contraseña">
+          </div>
+        </div>
+        <button class="btn-primary" style="margin-top:.75rem;" onclick="changeSelfPass()">Guardar cambios</button>
+      </div>
+    </div>
+
+  </div><!-- /adm-body -->
+</div><!-- /adminPanel -->
+
 <!-- CARRITO FLOTANTE -->
 <div class="cart-float">
   <button class="cart-btn" onclick="openCart()" id="cartBtn" style="display:none">
@@ -788,6 +1049,284 @@
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  /* ══════════════════════════════════════════
+     AUTH & ADMIN SYSTEM
+  ══════════════════════════════════════════ */
+
+  // Default users stored in localStorage
+  function getUsers() {
+    const stored = localStorage.getItem('cr_users');
+    if (stored) return JSON.parse(stored);
+    // Default seed users
+    const defaults = [
+      { id: 1, name: 'Administrador', username: 'admin', password: 'admin123', role: 'admin', blocked: false, lastLogin: null },
+      { id: 2, name: 'María López', username: 'maria.lopez', password: 'cafe123', role: 'worker', blocked: false, lastLogin: null },
+      { id: 3, name: 'Carlos Rivas', username: 'carlos.rivas', password: 'cafe123', role: 'worker', blocked: false, lastLogin: null },
+    ];
+    localStorage.setItem('cr_users', JSON.stringify(defaults));
+    return defaults;
+  }
+  function saveUsers(users) { localStorage.setItem('cr_users', JSON.stringify(users)); }
+
+  function getLog() {
+    const stored = localStorage.getItem('cr_log');
+    return stored ? JSON.parse(stored) : [];
+  }
+  function addLog(type, msg) {
+    const log = getLog();
+    log.unshift({ type, msg, time: new Date().toLocaleString('es-PE', { hour12: false }) });
+    if (log.length > 60) log.pop();
+    localStorage.setItem('cr_log', JSON.stringify(log));
+  }
+
+  let currentUser = null;
+
+  function openLoginModal() {
+    document.getElementById('loginModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+    setTimeout(() => document.getElementById('loginUser').focus(), 100);
+  }
+  function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('loginModal').addEventListener('click', function(e) {
+    if (e.target === this) closeLoginModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('loginModal').classList.contains('open')) doLogin();
+  });
+
+  function togglePass() {
+    const inp = document.getElementById('loginPass');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+
+  function doLogin() {
+    const username = document.getElementById('loginUser').value.trim();
+    const password = document.getElementById('loginPass').value;
+    const users = getUsers();
+    const user = users.find(u => u.username === username && u.password === password);
+    const errEl = document.getElementById('loginError');
+
+    if (!user) {
+      errEl.textContent = 'Usuario o contraseña incorrectos.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (user.blocked) {
+      errEl.textContent = '🔒 Tu cuenta está bloqueada. Contacta al administrador.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    // Update last login
+    user.lastLogin = new Date().toLocaleString('es-PE', { hour12: false });
+    saveUsers(users);
+    addLog('login', `${user.name} inició sesión`);
+    currentUser = user;
+    closeLoginModal();
+    openAdminPanel();
+  }
+
+  function doLogout() {
+    addLog('logout', `${currentUser.name} cerró sesión`);
+    currentUser = null;
+    document.getElementById('adminPanel').style.display = 'none';
+    document.body.style.overflow = '';
+    showToast('Sesión cerrada');
+  }
+
+  function openAdminPanel() {
+    document.getElementById('adminPanel').style.display = 'block';
+    document.body.style.overflow = 'auto';
+
+    // Role badge
+    const badge = document.getElementById('admRoleBadge');
+    badge.textContent = currentUser.role === 'admin' ? 'Administrador' : 'Trabajador';
+    badge.className = 'adm-role-badge ' + (currentUser.role === 'admin' ? 'role-admin' : 'role-worker');
+
+    // Show/hide admin-only tabs
+    const adminTabs = ['tabTrabajadores', 'tabActividad'];
+    adminTabs.forEach(id => {
+      document.getElementById(id).classList.toggle('worker-tab-hidden', currentUser.role !== 'admin');
+    });
+
+    // Welcome
+    document.getElementById('welcomeMsg').textContent = `Hola, ${currentUser.name.split(' ')[0]} 👋`;
+
+    renderStats();
+    renderDashLog();
+    if (currentUser.role === 'admin') renderWorkersTable();
+    renderProfile();
+
+    // Reset to dashboard tab
+    document.querySelectorAll('.adm-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.adm-tab').classList.add('active');
+    document.querySelectorAll('.adm-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('sec-dashboard').classList.add('active');
+  }
+
+  function admTab(sec, btn) {
+    document.querySelectorAll('.adm-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.adm-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('sec-' + sec).classList.add('active');
+    if (sec === 'trabajadores') renderWorkersTable();
+    if (sec === 'actividad') renderFullLog();
+  }
+
+  function renderStats() {
+    const users = getUsers();
+    const active = users.filter(u => !u.blocked).length;
+    const blocked = users.filter(u => u.blocked).length;
+    const workers = users.filter(u => u.role === 'worker').length;
+    const log = getLog();
+    const todayStr = new Date().toLocaleDateString('es-PE');
+    const todayLogins = log.filter(l => l.type === 'login' && l.time.startsWith(todayStr)).length;
+
+    const stats = currentUser.role === 'admin'
+      ? [
+          { num: users.length, label: 'Total personal', icon: '👥' },
+          { num: active, label: 'Activos', icon: '✅' },
+          { num: blocked, label: 'Bloqueados', icon: '🔒' },
+          { num: todayLogins, label: 'Accesos hoy', icon: '🚪' },
+        ]
+      : [
+          { num: todayLogins, label: 'Accesos hoy', icon: '🚪' },
+          { num: log.length, label: 'Registros totales', icon: '📋' },
+        ];
+
+    document.getElementById('statGrid').innerHTML = stats.map(s => `
+      <div class="stat-card">
+        <div style="font-size:1.6rem;margin-bottom:.4rem;">${s.icon}</div>
+        <div class="stat-num">${s.num}</div>
+        <div class="stat-label">${s.label}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderDashLog() {
+    const log = getLog().slice(0, 6);
+    const colors = { login: 'log-login', block: 'log-block', add: 'log-add', logout: 'log-logout' };
+    document.getElementById('dashLog').innerHTML = log.length === 0
+      ? '<p style="color:var(--muted);font-size:.85rem;">Sin actividad aún.</p>'
+      : log.map(l => `
+        <div class="log-item">
+          <div class="log-time">${l.time}</div>
+          <div class="log-dot ${colors[l.type] || 'log-logout'}"></div>
+          <div>${l.msg}</div>
+        </div>`).join('');
+  }
+
+  function renderFullLog() {
+    const log = getLog();
+    const colors = { login: 'log-login', block: 'log-block', add: 'log-add', logout: 'log-logout' };
+    document.getElementById('fullLog').innerHTML = log.length === 0
+      ? '<p style="color:var(--muted);font-size:.85rem;">Sin actividad registrada.</p>'
+      : log.map(l => `
+        <div class="log-item">
+          <div class="log-time">${l.time}</div>
+          <div class="log-dot ${colors[l.type] || 'log-logout'}"></div>
+          <div>${l.msg}</div>
+        </div>`).join('');
+  }
+
+  function renderWorkersTable() {
+    const users = getUsers();
+    document.getElementById('workersBody').innerHTML = users.map(u => `
+      <tr>
+        <td><strong>${u.name}</strong></td>
+        <td style="color:var(--muted);">@${u.username}</td>
+        <td><span class="status-badge" style="background:${u.role==='admin'?'#fef3c7':'var(--foam)'};color:${u.role==='admin'?'#92400e':'var(--muted)'};">${u.role === 'admin' ? '⭐ Admin' : '👤 Trabajador'}</span></td>
+        <td><span class="status-badge ${u.blocked ? 'status-blocked' : 'status-active'}">${u.blocked ? '🔒 Bloqueado' : '✅ Activo'}</span></td>
+        <td style="color:var(--muted);font-size:.8rem;">${u.lastLogin || 'Nunca'}</td>
+        <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+          ${u.id !== currentUser.id && u.role !== 'admin' ? `
+            <button class="action-btn ${u.blocked ? 'btn-unblock' : 'btn-block'}" onclick="toggleBlock(${u.id})">
+              ${u.blocked ? '🔓 Desbloquear' : '🔒 Bloquear'}
+            </button>
+            <button class="action-btn btn-delete" onclick="deleteWorker(${u.id})">🗑 Eliminar</button>
+          ` : '<span style="font-size:.78rem;color:var(--muted);">—</span>'}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function toggleBlock(id) {
+    const users = getUsers();
+    const u = users.find(x => x.id === id);
+    if (!u) return;
+    u.blocked = !u.blocked;
+    saveUsers(users);
+    addLog('block', `${currentUser.name} ${u.blocked ? 'bloqueó' : 'desbloqueó'} a ${u.name}`);
+    renderWorkersTable();
+    renderStats();
+    renderDashLog();
+    showToast(u.blocked ? `🔒 ${u.name} bloqueado` : `🔓 ${u.name} desbloqueado`);
+  }
+
+  function deleteWorker(id) {
+    const users = getUsers();
+    const u = users.find(x => x.id === id);
+    if (!u) return;
+    if (!confirm(`¿Eliminar a ${u.name}? Esta acción no se puede deshacer.`)) return;
+    const newUsers = users.filter(x => x.id !== id);
+    saveUsers(newUsers);
+    addLog('block', `${currentUser.name} eliminó al trabajador ${u.name}`);
+    renderWorkersTable();
+    renderStats();
+    renderDashLog();
+    showToast(`🗑 ${u.name} eliminado`);
+  }
+
+  function addWorker() {
+    const name = document.getElementById('newName').value.trim();
+    const username = document.getElementById('newUser').value.trim();
+    const password = document.getElementById('newPass').value;
+    if (!name || !username || !password) { showToast('⚠️ Completa todos los campos'); return; }
+    if (password.length < 6) { showToast('⚠️ La contraseña debe tener al menos 6 caracteres'); return; }
+    const users = getUsers();
+    if (users.find(u => u.username === username)) { showToast('⚠️ Ese usuario ya existe'); return; }
+    const newId = Math.max(...users.map(u => u.id)) + 1;
+    users.push({ id: newId, name, username, password, role: 'worker', blocked: false, lastLogin: null });
+    saveUsers(users);
+    addLog('add', `${currentUser.name} agregó al trabajador ${name}`);
+    document.getElementById('newName').value = '';
+    document.getElementById('newUser').value = '';
+    document.getElementById('newPass').value = '';
+    renderWorkersTable();
+    renderStats();
+    renderDashLog();
+    showToast(`✅ ${name} agregado al equipo`);
+  }
+
+  function renderProfile() {
+    const initials = currentUser.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    document.getElementById('profileAvatar').textContent = initials;
+    document.getElementById('profileName').textContent = currentUser.name;
+    document.getElementById('profileUser').textContent = `@${currentUser.username} · ${currentUser.role === 'admin' ? 'Administrador' : 'Trabajador'}`;
+  }
+
+  function changeSelfPass() {
+    const np = document.getElementById('newPassSelf').value;
+    const cp = document.getElementById('confirmPassSelf').value;
+    if (!np || !cp) { showToast('⚠️ Completa ambos campos'); return; }
+    if (np.length < 6) { showToast('⚠️ Mínimo 6 caracteres'); return; }
+    if (np !== cp) { showToast('⚠️ Las contraseñas no coinciden'); return; }
+    const users = getUsers();
+    const u = users.find(x => x.id === currentUser.id);
+    u.password = np;
+    currentUser.password = np;
+    saveUsers(users);
+    document.getElementById('newPassSelf').value = '';
+    document.getElementById('confirmPassSelf').value = '';
+    showToast('✅ Contraseña actualizada');
   }
 </script>
 </body>
