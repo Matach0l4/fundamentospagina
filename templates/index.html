@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Café Ritual — Especialidad & Pedidos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream:   #F7F2EA;
+    --espresso:#1C1008;
+    --caramel: #C8813A;
+    --latte:   #D4A96A;
+    --foam:    #EDE5D8;
+    --muted:   #7A6A55;
+    --white:   #FFFFFF;
+    --green-wa:#25D366;
+    --pink-ig: #E1306C;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--espresso);
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(247,242,234,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(200,129,58,0.15);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-weight: 700;
+    color: var(--espresso); text-decoration: none;
+    letter-spacing: -.02em;
+  }
+  .nav-logo span { color: var(--caramel); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    text-decoration: none; font-size: .875rem; font-weight: 500;
+    color: var(--muted); transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--caramel); }
+  .nav-social { display: flex; gap: .75rem; }
+  .nav-social a {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .2s, opacity .2s; opacity: .75;
+  }
+  .nav-social a:hover { transform: scale(1.15); opacity: 1; }
+  .nav-social .ig { background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
+  .nav-social .wa { background: var(--green-wa); }
+  .nav-social svg { width: 18px; height: 18px; fill: white; }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 6rem 2rem 4rem;
+    background:
+      radial-gradient(ellipse 60% 60% at 80% 40%, rgba(200,129,58,.12) 0%, transparent 70%),
+      var(--cream);
+  }
+  .hero-inner {
+    max-width: 900px; text-align: center; position: relative; z-index: 2;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: .75rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--caramel); font-weight: 500;
+    margin-bottom: 1.25rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    line-height: 1.05; font-weight: 700;
+    color: var(--espresso);
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em {
+    font-style: italic; color: var(--caramel);
+    display: block;
+  }
+  .hero-sub {
+    font-size: 1.1rem; color: var(--muted); max-width: 480px;
+    margin: 0 auto 2.5rem; line-height: 1.7; font-weight: 300;
+  }
+  .hero-cta {
+    display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+  }
+  .btn-primary {
+    padding: .875rem 2rem; border-radius: 50px;
+    background: var(--espresso); color: var(--cream);
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: .9rem;
+    text-decoration: none; transition: background .2s, transform .15s;
+    cursor: pointer; border: none;
+  }
+  .btn-primary:hover { background: var(--caramel); transform: translateY(-1px); }
+  .btn-ghost {
+    padding: .875rem 2rem; border-radius: 50px;
+    border: 1.5px solid var(--caramel); color: var(--caramel);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: .9rem;
+    text-decoration: none; transition: all .2s;
+    cursor: pointer;
+  }
+  .btn-ghost:hover { background: var(--caramel); color: white; }
+
+  /* floating beans decoration */
+  .bean {
+    position: absolute; border-radius: 50%;
+    background: var(--caramel); opacity: .08;
+    animation: float 8s ease-in-out infinite;
+  }
+  .bean:nth-child(1) { width:180px;height:180px; top:10%;left:5%; animation-delay:0s; }
+  .bean:nth-child(2) { width:100px;height:100px; top:65%;right:8%; animation-delay:2s; }
+  .bean:nth-child(3) { width:60px;height:60px; top:30%;right:20%; animation-delay:4s; }
+  @keyframes float {
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-20px);}
+  }
+
+  /* ─── SECTION COMMONS ─── */
+  section { padding: 5rem 2rem; }
+  .section-label {
+    font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--caramel); margin-bottom: .75rem; display: block;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: var(--espresso); margin-bottom: 1rem; font-weight: 700;
+  }
+  .section-sub { color: var(--muted); max-width: 500px; line-height: 1.7; }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ─── MENU ─── */
+  #menu { background: var(--espresso); color: var(--cream); }
+  #menu .section-title { color: var(--latte); }
+  #menu .section-sub { color: rgba(255,255,255,.55); }
+  #menu .section-label { color: var(--caramel); }
+
+  .menu-tabs {
+    display: flex; gap: .5rem; flex-wrap: wrap;
+    margin: 2rem 0;
+  }
+  .tab-btn {
+    padding: .5rem 1.25rem; border-radius: 50px;
+    background: rgba(255,255,255,.08); color: rgba(255,255,255,.6);
+    border: 1px solid rgba(255,255,255,.15);
+    font-family: 'DM Sans', sans-serif; font-size: .85rem; cursor: pointer;
+    transition: all .2s;
+  }
+  .tab-btn.active, .tab-btn:hover {
+    background: var(--caramel); color: white; border-color: var(--caramel);
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+  .menu-card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px; padding: 1.5rem;
+    transition: background .2s, transform .2s;
+    cursor: pointer; position: relative;
+  }
+  .menu-card:hover { background: rgba(255,255,255,.11); transform: translateY(-3px); }
+  .menu-card-icon { font-size: 2.2rem; margin-bottom: 1rem; display: block; }
+  .menu-card h3 {
+    font-family: 'Playfair Display', serif; font-size: 1.15rem;
+    color: var(--cream); margin-bottom: .4rem;
+  }
+  .menu-card p { font-size: .82rem; color: rgba(255,255,255,.45); line-height: 1.5; margin-bottom: 1rem; }
+  .menu-card-footer { display: flex; justify-content: space-between; align-items: center; }
+  .price { font-weight: 700; color: var(--latte); font-size: 1rem; }
+  .add-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--caramel); border: none; color: white;
+    font-size: 1.3rem; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .2s, transform .15s;
+    line-height: 1;
+  }
+  .add-btn:hover { background: var(--latte); transform: scale(1.1); }
+  .badge {
+    position: absolute; top: 1rem; right: 1rem;
+    background: var(--caramel); color: white;
+    font-size: .65rem; padding: .2rem .55rem; border-radius: 50px;
+    text-transform: uppercase; letter-spacing: .1em;
+  }
+
+  /* ─── CART ─── */
+  .cart-float {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+  }
+  .cart-btn {
+    background: var(--espresso); color: var(--cream);
+    border: none; border-radius: 50px;
+    padding: .85rem 1.5rem; font-family: 'DM Sans', sans-serif;
+    font-size: .9rem; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; gap: .6rem;
+    box-shadow: 0 8px 32px rgba(28,16,8,.35);
+    transition: background .2s, transform .15s;
+  }
+  .cart-btn:hover { background: var(--caramel); transform: translateY(-2px); }
+  .cart-count {
+    background: var(--caramel); color: white;
+    border-radius: 50px; padding: .15rem .55rem;
+    font-size: .75rem; font-weight: 700;
+    min-width: 22px; text-align: center;
+  }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(28,16,8,.65); backdrop-filter: blur(6px);
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--cream); border-radius: 24px 24px 0 0;
+    padding: 2rem; width: 100%; max-width: 600px;
+    max-height: 85vh; overflow-y: auto;
+    transform: translateY(40px); transition: transform .3s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .modal-header h2 {
+    font-family: 'Playfair Display', serif; font-size: 1.5rem;
+  }
+  .modal-close {
+    background: var(--foam); border: none; border-radius: 50%;
+    width: 36px; height: 36px; font-size: 1.1rem; cursor: pointer;
+    color: var(--muted); display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .modal-close:hover { background: var(--caramel); color: white; }
+
+  .cart-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .85rem 0; border-bottom: 1px solid var(--foam);
+  }
+  .cart-item-name { font-weight: 500; font-size: .9rem; }
+  .cart-item-meta { font-size: .78rem; color: var(--muted); }
+  .cart-item-right { display: flex; align-items: center; gap: .75rem; }
+  .cart-item-price { font-weight: 700; color: var(--caramel); }
+  .qty-ctrl { display: flex; align-items: center; gap: .5rem; }
+  .qty-btn {
+    background: var(--foam); border: none; border-radius: 50%;
+    width: 28px; height: 28px; cursor: pointer; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .qty-btn:hover { background: var(--caramel); color: white; }
+
+  .cart-total {
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 1.25rem 0; font-size: 1.1rem; font-weight: 600;
+  }
+  .cart-empty {
+    text-align: center; padding: 2rem;
+    color: var(--muted); font-size: .9rem;
+  }
+
+  /* ORDER FORM */
+  .order-form { display: flex; flex-direction: column; gap: 1rem; }
+  .form-row { display: flex; flex-direction: column; gap: .4rem; }
+  .form-row label { font-size: .8rem; font-weight: 500; color: var(--muted); }
+  .form-row input, .form-row textarea, .form-row select {
+    padding: .75rem 1rem; border: 1.5px solid var(--foam);
+    border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: .9rem;
+    background: white; color: var(--espresso);
+    transition: border-color .2s;
+    width: 100%;
+  }
+  .form-row input:focus, .form-row textarea:focus, .form-row select:focus {
+    outline: none; border-color: var(--caramel);
+  }
+  .form-row textarea { resize: vertical; min-height: 70px; }
+
+  /* ─── ACERCA ─── */
+  #nosotros { background: var(--foam); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+    align-items: center;
+  }
+  .about-visual {
+    aspect-ratio: 1; border-radius: 24px;
+    background: linear-gradient(135deg, var(--caramel) 0%, var(--espresso) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8rem; position: relative; overflow: hidden;
+  }
+  .about-visual::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.15), transparent 60%);
+  }
+  .about-list { list-style: none; margin-top: 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
+  .about-list li {
+    display: flex; align-items: flex-start; gap: .75rem;
+    font-size: .9rem; color: var(--muted); line-height: 1.6;
+  }
+  .about-list li::before {
+    content: '●'; color: var(--caramel); font-size: .5rem;
+    margin-top: .45rem; flex-shrink: 0;
+  }
+
+  /* ─── SOCIAL CTA ─── */
+  #social {
+    background: var(--espresso); text-align: center;
+    padding: 5rem 2rem;
+  }
+  #social .section-title { color: var(--latte); margin-bottom: 1rem; }
+  #social .section-sub { color: rgba(255,255,255,.5); margin: 0 auto 2.5rem; }
+  .social-cards {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+  }
+  .social-card {
+    display: flex; align-items: center; gap: .75rem;
+    padding: 1rem 1.75rem; border-radius: 50px;
+    text-decoration: none; font-weight: 500; font-size: .9rem;
+    transition: transform .2s, filter .2s; color: white;
+  }
+  .social-card:hover { transform: translateY(-3px); filter: brightness(1.1); }
+  .social-card.instagram {
+    background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+  }
+  .social-card.whatsapp { background: var(--green-wa); }
+  .social-card svg { width: 22px; height: 22px; fill: white; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--espresso); border-top: 1px solid rgba(255,255,255,.07);
+    padding: 2rem; text-align: center;
+    color: rgba(255,255,255,.35); font-size: .8rem;
+  }
+  footer a { color: var(--caramel); text-decoration: none; }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: var(--espresso); color: var(--cream);
+    padding: .75rem 1.5rem; border-radius: 50px;
+    font-size: .85rem; font-weight: 500; z-index: 400;
+    transition: transform .3s;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-visual { max-width: 280px; }
+  }
+
+  /* hidden category */
+  .menu-category { display: none; }
+  .menu-category.active { display: contents; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Café <span>Ritual</span></a>
+  <ul class="nav-links">
+    <li><a href="#menu">Menú</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#social">Contacto</a></li>
+  </ul>
+  <div class="nav-social">
+    <a class="ig" href="https://www.instagram.com/tu_cafeteria" target="_blank" aria-label="Instagram">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    </a>
+    <a class="wa" href="https://wa.me/51999999999" target="_blank" aria-label="WhatsApp">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="bean"></div>
+  <div class="bean"></div>
+  <div class="bean"></div>
+  <div class="hero-inner">
+    <span class="hero-eyebrow">Café de especialidad · Lima, Perú</span>
+    <h1>Cada sorbo es<em>un ritual</em></h1>
+    <p class="hero-sub">Granos seleccionados de origen único, preparados con precisión y servidos con calidez. Recibe tu pedido donde estés.</p>
+    <div class="hero-cta">
+      <a href="#menu" class="btn-primary">Ver el menú</a>
+      <a href="https://wa.me/51999999999?text=Hola!%20Quiero%20hacer%20un%20pedido" target="_blank" class="btn-ghost">Pedir por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="container">
+    <span class="section-label">Lo que ofrecemos</span>
+    <h2 class="section-title">Nuestro Menú</h2>
+    <p class="section-sub">Todo preparado al momento, con leche de primera y café de altura.</p>
+
+    <div class="menu-tabs">
+      <button class="tab-btn active" onclick="filterMenu('calientes', this)">☕ Calientes</button>
+      <button class="tab-btn" onclick="filterMenu('frios', this)">🧊 Fríos</button>
+      <button class="tab-btn" onclick="filterMenu('pasteles', this)">🍰 Pasteles</button>
+      <button class="tab-btn" onclick="filterMenu('desayunos', this)">🥐 Desayunos</button>
+    </div>
+
+    <div class="menu-grid" id="menuGrid">
+
+      <!-- CALIENTES -->
+      <div class="menu-card menu-category calientes active" onclick="addToCart('Espresso', 8, '☕')">
+        <span class="menu-card-icon">☕</span>
+        <h3>Espresso</h3>
+        <p>Doble extracción de nuestro blend signature. Intenso, cremoso, sin filtros.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 8</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Espresso', 8, '☕')">+</button>
+        </div>
+      </div>
+
+      <div class="menu-card menu-category calientes active">
+        <span class="badge">Fav</span>
+        <span class="menu-card-icon">🥛</span>
+        <h3>Flat White</h3>
+        <p>Ristretto doble con leche vaporizada texturizada. Equilibrio perfecto.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 14</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Flat White', 14, '🥛')">+</button>
+        </div>
+      </div>
+
+      <div class="menu-card menu-category calientes active">
+        <span class="menu-card-icon">☁️</span>
+        <h3>Cappuccino</h3>
+        <p>Espresso, leche vaporizada y espuma sedosa en perfecta proporción.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 13</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Cappuccino', 13, '☁️')">+</button>
+        </div>
+      </div>
+
+      <div class="menu-card menu-category calientes active">
+        <span class="menu-card-icon">🍫</span>
+        <h3>Mocha</h3>
+        <p>Espresso con cacao oscuro de primera y leche cremosa. Indulgente.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 16</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Mocha', 16, '🍫')">+</button>
+        </div>
+      </div>
+
+      <!-- FRÍOS -->
+      <div class="menu-card menu-category frios">
+        <span class="badge">Nuevo</span>
+        <span class="menu-card-icon">🧊</span>
+        <h3>Cold Brew</h3>
+        <p>Extracción en frío durante 18 horas. Suave, bajo en acidez y refrescante.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 18</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Cold Brew', 18, '🧊')">+</button>
+        </div>
+      </div>
+
+      <div class="menu-card menu-category frios">
+        <span class="menu-card-icon">🥤</span>
+        <h3>Iced Latte</h3>
+        <p>Espresso sobre hielo con leche fría. Simple y delicioso.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 15</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Iced Latte', 15, '🥤')">+</button>
+        </div>
+      </div>
+
+      <div class="menu-card menu-category frios">
+        <span class="menu-card-icon">🍬</span>
+        <h3>Frappé de Caramelo</h3>
+        <p>Café helado, caramelo artesanal y crema batida. Una delicia.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 19</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Frappé de Caramelo', 19, '🍬')">+</button>
+        </div>
+      </div>
+
+      <div class="menu-card menu-category frios">
+        <span class="menu-card-icon">🍵</span>
+        <h3>Matcha Latte Frío</h3>
+        <p>Matcha ceremonial japonés con leche de avena y hielo. Energía suave.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 17</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Matcha Latte Frío', 17, '🍵')">+</button>
+        </div>
+      </div>
+
+      <!-- PASTELES -->
+      <div class="menu-card menu-category pasteles">
+        <span class="badge">Casero</span>
+        <span class="menu-card-icon">🍰</span>
+        <h3>Cheesecake de Maracuyá</h3>
+        <p>Cremoso, ácido y dulce. Fruta de temporada, receta propia.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 16</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Cheesecake de Maracuyá', 16, '🍰')">+</button>
+        </div>
+      </div>
+
+      <div class="menu-card menu-category pasteles">
+        <span class="menu-card-icon">🍩</span>
+        <h3>Brownie de Chocolate</h3>
+        <p>Denso, húmedo y con costra crujiente. Servido tibio con helado opcional.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 14</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Brownie de Chocolate', 14, '🍩')">+</button>
+        </div>
+      </div>
+
+      <div class="menu-card menu-category pasteles">
+        <span class="menu-card-icon">🥐</span>
+        <h3>Croissant de Almendra</h3>
+        <p>Hojaldrado, con frangipane de almendra y azúcar glass. Artesanal.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 12</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Croissant de Almendra', 12, '🥐')">+</button>
+        </div>
+      </div>
+
+      <!-- DESAYUNOS -->
+      <div class="menu-card menu-category desayunos">
+        <span class="badge">Popular</span>
+        <span class="menu-card-icon">🍞</span>
+        <h3>Tostadas con Palta</h3>
+        <p>Pan artesanal, palta fresca, limón y topping a elección. Nutritivo.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 20</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Tostadas con Palta', 20, '🍞')">+</button>
+        </div>
+      </div>
+
+      <div class="menu-card menu-category desayunos">
+        <span class="menu-card-icon">🍳</span>
+        <h3>Bowl de Granola</h3>
+        <p>Granola casera, yogurt natural, frutas de temporada y miel.</p>
+        <div class="menu-card-footer">
+          <span class="price">S/ 18</span>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart('Bowl de Granola', 18, '🍳')">+</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- NOSOTROS -->
+<section id="nosotros">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual">☕</div>
+      <div>
+        <span class="section-label">Nuestra historia</span>
+        <h2 class="section-title">Café de especialidad con alma peruana</h2>
+        <p class="section-sub">Trabajamos directamente con productores de Junín, Cusco y San Martín. Cada taza es el resultado de años de trabajo de agricultores apasionados y de nuestro equipo de baristas certificados.</p>
+        <ul class="about-list">
+          <li>Granos de origen único, cosecha reciente, trazabilidad completa</li>
+          <li>Baristas con certificación SCA y entrenamiento continuo</li>
+          <li>Leches plant-based: avena, almendra y coco disponibles</li>
+          <li>Horario: Lunes a Viernes 7am–8pm · Sábados 8am–6pm</li>
+          <li>Pedidos a domicilio vía WhatsApp o en tienda</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL -->
+<section id="social">
+  <div class="container">
+    <span class="section-label">Encuéntranos</span>
+    <h2 class="section-title">Síguenos y escríbenos</h2>
+    <p class="section-sub">Comparte tu ritual, haz tu pedido o escríbenos para cualquier consulta. Respondemos rápido.</p>
+    <div class="social-cards">
+      <a class="social-card instagram" href="https://www.instagram.com/tu_cafeteria" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @tu_cafeteria en Instagram
+      </a>
+      <a class="social-card whatsapp" href="https://wa.me/51999999999?text=Hola!%20Quiero%20hacer%20un%20pedido%20en%20Café%20Ritual" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Pedir por WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Café Ritual · Lima, Perú · <a href="https://wa.me/51999999999">+51 999 999 999</a></p>
+</footer>
+
+<!-- CARRITO FLOTANTE -->
+<div class="cart-float">
+  <button class="cart-btn" onclick="openCart()" id="cartBtn" style="display:none">
+    🛒 Mi pedido
+    <span class="cart-count" id="cartCount">0</span>
+  </button>
+</div>
+
+<!-- MODAL CARRITO / PEDIDO -->
+<div class="modal-overlay" id="cartModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Tu Pedido</h2>
+      <button class="modal-close" onclick="closeCart()">✕</button>
+    </div>
+    <div id="cartItems"></div>
+    <div id="cartTotalRow" style="display:none">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cartTotal" style="color:var(--caramel)">S/ 0</span>
+      </div>
+      <div class="order-form" id="orderForm">
+        <div class="form-row">
+          <label>Tu nombre *</label>
+          <input type="text" id="inputNombre" placeholder="¿Cómo te llamamos?">
+        </div>
+        <div class="form-row">
+          <label>Teléfono / WhatsApp *</label>
+          <input type="tel" id="inputTel" placeholder="+51 987 654 321">
+        </div>
+        <div class="form-row">
+          <label>Tipo de entrega</label>
+          <select id="inputEntrega">
+            <option value="recojo">Recojo en tienda</option>
+            <option value="delivery">Delivery (Lima)</option>
+          </select>
+        </div>
+        <div class="form-row" id="dirRow" style="display:none">
+          <label>Dirección de entrega</label>
+          <input type="text" id="inputDir" placeholder="Calle, número, distrito...">
+        </div>
+        <div class="form-row">
+          <label>Notas adicionales</label>
+          <textarea id="inputNotas" placeholder="Sin azúcar, leche de avena, etc."></textarea>
+        </div>
+        <button class="btn-primary" style="width:100%;padding:1rem;font-size:1rem" onclick="enviarPedido()">
+          📲 Enviar pedido por WhatsApp
+        </button>
+      </div>
+    </div>
+    <div class="cart-empty" id="cartEmpty">
+      <p>Tu carrito está vacío.</p>
+      <p style="margin-top:.5rem;font-size:.8rem;color:var(--muted)">Agrega algo del menú 👆</p>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let cart = [];
+
+  function filterMenu(cat, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.menu-category').forEach(el => {
+      el.classList.toggle('active', el.classList.contains(cat));
+    });
+  }
+
+  function addToCart(name, price, icon) {
+    const existing = cart.find(i => i.name === name);
+    if (existing) { existing.qty++; }
+    else { cart.push({ name, price, icon, qty: 1 }); }
+    updateCartUI();
+    showToast(`${icon} ${name} añadido`);
+  }
+
+  function updateCartUI() {
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const count = cart.reduce((s, i) => s + i.qty, 0);
+    document.getElementById('cartCount').textContent = count;
+    document.getElementById('cartBtn').style.display = count > 0 ? 'flex' : 'none';
+    document.getElementById('cartTotal').textContent = `S/ ${total}`;
+
+    const itemsEl = document.getElementById('cartItems');
+    const empty = document.getElementById('cartEmpty');
+    const totalRow = document.getElementById('cartTotalRow');
+
+    if (cart.length === 0) {
+      empty.style.display = 'block';
+      totalRow.style.display = 'none';
+      itemsEl.innerHTML = '';
+      return;
+    }
+    empty.style.display = 'none';
+    totalRow.style.display = 'block';
+    itemsEl.innerHTML = cart.map((item, idx) => `
+      <div class="cart-item">
+        <div>
+          <div class="cart-item-name">${item.icon} ${item.name}</div>
+          <div class="cart-item-meta">S/ ${item.price} c/u</div>
+        </div>
+        <div class="cart-item-right">
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="changeQty(${idx}, -1)">−</button>
+            <span>${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+          </div>
+          <span class="cart-item-price">S/ ${item.price * item.qty}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function changeQty(idx, delta) {
+    cart[idx].qty += delta;
+    if (cart[idx].qty <= 0) cart.splice(idx, 1);
+    updateCartUI();
+  }
+
+  function openCart() {
+    document.getElementById('cartModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCart() {
+    document.getElementById('cartModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('cartModal').addEventListener('click', function(e) {
+    if (e.target === this) closeCart();
+  });
+
+  document.getElementById('inputEntrega').addEventListener('change', function() {
+    document.getElementById('dirRow').style.display = this.value === 'delivery' ? 'flex' : 'none';
+  });
+
+  function enviarPedido() {
+    const nombre = document.getElementById('inputNombre').value.trim();
+    const tel = document.getElementById('inputTel').value.trim();
+    if (!nombre || !tel) { showToast('⚠️ Completa nombre y teléfono'); return; }
+    if (cart.length === 0) { showToast('⚠️ Tu carrito está vacío'); return; }
+
+    const entrega = document.getElementById('inputEntrega').value;
+    const dir = document.getElementById('inputDir').value.trim();
+    const notas = document.getElementById('inputNotas').value.trim();
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+    let msg = `🛒 *Nuevo pedido - Café Ritual*\n\n`;
+    msg += `👤 Nombre: ${nombre}\n📞 Teléfono: ${tel}\n`;
+    msg += `📦 Entrega: ${entrega === 'delivery' ? `Delivery${dir ? ' - ' + dir : ''}` : 'Recojo en tienda'}\n\n`;
+    msg += `*Pedido:*\n`;
+    cart.forEach(i => { msg += `• ${i.icon} ${i.name} x${i.qty} = S/ ${i.price * i.qty}\n`; });
+    msg += `\n💰 *Total: S/ ${total}*`;
+    if (notas) msg += `\n📝 Notas: ${notas}`;
+
+    const encoded = encodeURIComponent(msg);
+    window.open(`https://wa.me/51999999999?text=${encoded}`, '_blank');
+    cart = [];
+    updateCartUI();
+    closeCart();
+    showToast('✅ ¡Pedido enviado a WhatsApp!');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>
